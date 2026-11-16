@@ -295,16 +295,22 @@
       }
       /* ---------- apsara reveal ---------- */
       .apsara-box {
+        display: none;
         width: 100%; max-width: 340px; margin-top: 22px;
         background: var(--card); border: 1px solid var(--line); border-radius: 18px;
         padding: 18px 16px; box-shadow: var(--shadow);
       }
+      .apsara-box.show { display: block; animation: pageIn .6s ease both; }
       .apsara-q {
         font-family: "Playfair Display", Georgia, serif; font-weight: 700;
         font-size: 1.35rem; margin: 0 0 12px; line-height: 1.25;
       }
       .apsara-fig { display: none; margin: 14px 0 4px; }
-      .apsara-fig.show { display: block; animation: pageIn .6s ease both; }
+      .apsara-fig.show { display: block; animation: riseFromWell .9s cubic-bezier(.3,1.3,.45,1) both; }
+      @keyframes riseFromWell {
+        from { opacity: 0; transform: translateY(46px) scale(.9); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
       .apsara-fig img {
         width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto;
         border-radius: 14px; border: 4px solid var(--rose-soft);
@@ -476,7 +482,7 @@
             </div>
           </div>
           <p class="hint" id="well-hint">Your wish is safe here</p>
-          <div class="apsara-box">
+          <div class="apsara-box" id="apsara-box">
             <p class="apsara-q">Want to see an apsara?</p>
             <button class="btn" id="apsara-yes" type="button">Yes, show me</button>
             <figure class="apsara-fig" id="apsara-fig">
@@ -495,17 +501,12 @@
       <section class="page" id="page-4" aria-label="A song for Teena">
         <p class="chapter">Chapter Three</p>
         <h2>A song for Teena</h2>
-        <p class="lead">Every good story has a song in it. This page has a real song on the record, saved only for you. Press the big Play button below and let it turn for a while.</p>
+        <p class="lead">Every good story has a song in it. This page has a real song on the record, saved only for you. It starts on its own as this page opens. Just let it turn for a while.</p>
         <div class="scene">
           <div class="vinyl-stage" id="vinyl-stage">
             <div class="vinyl" id="vinyl" aria-hidden="true"></div>
           </div>
-          <div class="song-card">
-            <p class="song-title">Saudebaazi</p>
-            <p class="song-sub">Saudebaazi, sung by Javed Ali, from Aakrosh (2010). Music by Pritam, lyrics by Irshad Kamil.</p>
-            <button class="btn btn-play" id="play-btn" type="button">▶ Play the song</button>
-            <p class="hint" id="song-hint">Tap Play, Teena. This one is for you.</p>
-          </div>
+          <p class="hint" id="song-hint">Your song is starting, Teena. This one is for you.</p>
           <div id="yt-holder" aria-hidden="true"><div id="yt-player"></div></div>
         </div>
         <div class="navrow" style="gap:12px; flex-wrap:wrap;">
@@ -713,23 +714,32 @@
           document.getElementById("well-hint").textContent =
             "Wish made. The well is keeping it safe, Teena. Some wishes come true in the sweetest, most unexpected ways.";
           wishBtn.hidden = true;
-          document.getElementById("to-page-4").hidden = false;
+          // the coin lands, and the well itself asks the apsara question
+          setTimeout(function () {
+            document.getElementById("well-hint").textContent =
+              "The well has heard your wish, Teena, and it has something to ask you.";
+            var box = document.getElementById("apsara-box");
+            box.classList.add("show");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 1100);
         });
-        document.getElementById("to-page-4").addEventListener("click", function () { goTo(4); });
+        document.getElementById("to-page-4").addEventListener("click", function () { goTo(4); startSong(); });
 
-        /* ---------- page 3: apsara reveal ---------- */
+        /* ---------- page 3: the apsara rises from the well ---------- */
         var apsaraYes = document.getElementById("apsara-yes");
         var apsaraFig = document.getElementById("apsara-fig");
         apsaraYes.addEventListener("click", function () {
           apsaraFig.classList.add("show");
           apsaraYes.hidden = true;
           celebrate(false);
-          apsaraFig.scrollIntoView({ behavior: "smooth", block: "center" });
+          document.getElementById("to-page-4").hidden = false;
+          setTimeout(function () {
+            apsaraFig.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 60);
         });
 
-        /* ---------- page 4: song, Saudebaazi on YouTube ---------- */
+        /* ---------- page 4: song on a hidden YouTube player, no buttons ---------- */
         var playing = false, noteTimer = null, ytPlayer = null, ytReady = false, wantPlay = false;
-        var playBtn = document.getElementById("play-btn");
         var songHint = document.getElementById("song-hint");
         var vinyl = document.getElementById("vinyl");
         var vinylStage = document.getElementById("vinyl-stage");
@@ -746,18 +756,16 @@
         function setPlayingUI() {
           playing = true;
           vinyl.classList.add("spinning");
-          playBtn.textContent = "\u275A\u275A Pause";
-          songHint.textContent = "Playing now. Saudebaazi, just for you, Teena.";
+          songHint.textContent = "Playing now, just for you, Teena.";
           if (noteTimer) clearInterval(noteTimer);
           noteTimer = setInterval(floatNote, 900);
           floatNote();
         }
-        function setPausedUI(msg) {
+        function setStoppedUI(msg) {
           playing = false;
           vinyl.classList.remove("spinning");
-          playBtn.textContent = "\u25B6 Play the song";
           if (noteTimer) clearInterval(noteTimer);
-          songHint.textContent = msg || "Paused. The record is patient. It will wait for you, Teena.";
+          if (msg) songHint.textContent = msg;
         }
         window.onYouTubeIframeAPIReady = function () {
           ytPlayer = new YT.Player("yt-player", {
@@ -771,8 +779,8 @@
               },
               onStateChange: function (e) {
                 if (e.data === YT.PlayerState.PLAYING) setPlayingUI();
-                else if (e.data === YT.PlayerState.PAUSED) setPausedUI();
-                else if (e.data === YT.PlayerState.ENDED) setPausedUI("That was your song, Teena. Tap Play to hear it again.");
+                else if (e.data === YT.PlayerState.PAUSED) setStoppedUI();
+                else if (e.data === YT.PlayerState.ENDED) setStoppedUI("That was your song, Teena.");
               }
             }
           });
@@ -784,22 +792,21 @@
           if (first && first.parentNode) first.parentNode.insertBefore(tag, first);
           else document.head.appendChild(tag);
         })();
-        function playSong() {
+        function startSong() {
           wantPlay = true;
-          playBtn.textContent = "Loading the song...";
-          songHint.textContent = "Loading your song, Teena. One moment.";
           if (ytReady && ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo();
         }
         function stopSong() {
           wantPlay = false;
           if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
-          setPausedUI();
+          setStoppedUI("Your song is starting, Teena. This one is for you.");
         }
-        playBtn.addEventListener("click", function () { playing ? stopSong() : playSong(); });
+        // no button: a tap anywhere on the song page starts the music if it hasn't
+        document.getElementById("page-4").addEventListener("pointerdown", function () {
+          if (!playing) startSong();
+        });
         document.getElementById("to-page-5").addEventListener("click", function () {
-          wantPlay = false;
-          if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
-          setPausedUI("Tap Play, Teena. This one is for you.");
+          stopSong();
           goTo(5);
         });
         document.getElementById("to-page-6").addEventListener("click", function () { goTo(6); });
