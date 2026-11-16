@@ -355,6 +355,23 @@
         20% { opacity: 1; }
         100% { opacity: 0; transform: translateY(-72px) translateX(14px) scale(1.1) rotate(10deg); }
       }
+      /* ---------- letter ---------- */
+      .letter-card {
+        width: 100%; max-width: 400px; margin-top: 20px; text-align: left;
+        background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+        padding: 26px 24px 22px; box-shadow: var(--shadow);
+      }
+      .letter-card p { font-size: 1.03rem; line-height: 1.7; margin: 0 0 14px; color: var(--ink); }
+      .letter-card p:last-child { margin-bottom: 0; }
+      .letter-dear {
+        font-family: "Playfair Display", Georgia, serif; font-weight: 700;
+        font-size: 1.3rem; margin-bottom: 14px;
+      }
+      .letter-sign {
+        font-family: "Playfair Display", Georgia, serif; font-style: italic;
+        font-size: 1.35rem; color: var(--rose-deep); margin-top: 4px;
+      }
+      .letter-heart { text-align: center; color: var(--rose); font-size: 1.2rem; margin-bottom: 14px; }
       /* ---------- final question ---------- */
       .q-stage { position: relative; width: 100%; min-height: 240px; }
       .q-buttons {
@@ -397,7 +414,7 @@
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
     <main class="stage">
       <div class="dots" id="dots" aria-hidden="true">
-        <span class="on"></span><span></span><span></span><span></span><span></span>
+        <span class="on"></span><span></span><span></span><span></span><span></span><span></span>
       </div>
 
       <!-- Page 1 · the gift -->
@@ -484,24 +501,46 @@
             <div class="vinyl" id="vinyl" aria-hidden="true"></div>
           </div>
           <div class="song-card">
-            <p class="song-title">Hota Hai Dil Ka Ye</p>
-            <p class="song-sub">Hai Dil Ka Yeh Dhadakna, sung by Kumar Sanu and Anuradha Paudwal, from Dulhan Dilwale Ki</p>
+            <p class="song-title">Saudebaazi</p>
+            <p class="song-sub">Saudebaazi, sung by Javed Ali, from Aakrosh (2010). Music by Pritam, lyrics by Irshad Kamil.</p>
             <button class="btn btn-play" id="play-btn" type="button">▶ Play the song</button>
             <p class="hint" id="song-hint">Tap Play, Teena. This one is for you.</p>
           </div>
           <div id="yt-holder" aria-hidden="true"><div id="yt-player"></div></div>
         </div>
         <div class="navrow" style="gap:12px; flex-wrap:wrap;">
-          <button class="btn" id="to-page-5" type="button">The last page →</button>
+          <button class="btn" id="to-page-5" type="button">A letter for you →</button>
         </div>
       </section>
 
-      <!-- Page 5 · the question -->
-      <section class="page" id="page-5" aria-label="One last question">
+      <!-- Page 5 · the letter -->
+      <section class="page" id="page-5" aria-label="A letter for Teena">
+        <p class="chapter">Chapter Four</p>
+        <h2>A letter for you, Teena</h2>
+        <p class="lead">Before the last page, there is something that deserved to be said properly, in writing.</p>
+        <div class="scene">
+          <div class="letter-card">
+            <div class="letter-heart" aria-hidden="true">♥</div>
+            <p class="letter-dear">Dear Teena,</p>
+            <p>There is something I have wanted to say to you properly, so I am writing it here, where it will not get lost.</p>
+            <p>You are pretty, Teena. Not just in photos, though you look lovely in every single one of them. You are pretty in the way you smile, the way it reaches your eyes before you even realise it. You are pretty in the way you talk, in your laugh, and in the small kindnesses you do without thinking twice.</p>
+            <p>Most of all, you make ordinary days feel special. A normal afternoon, a short conversation, a simple hello from you, and somehow the whole day feels lighter and warmer. That is a rare thing, and I do not think you know how much it means.</p>
+            <p>I just wanted you to know that someone notices. Someone is grateful that you are exactly the way you are.</p>
+            <p>With all my heart,</p>
+            <p class="letter-sign">Saurabh</p>
+          </div>
+        </div>
+        <div class="navrow">
+          <button class="btn" id="to-page-6" type="button">The last page →</button>
+        </div>
+      </section>
+
+      <!-- Page 6 · the question -->
+      <section class="page" id="page-6" aria-label="One last question">
         <p class="chapter">The Last Page</p>
         <div id="question-block">
           <h2>One last question, Teena</h2>
-          <p class="lead">This little book had a gift, a candle, a wish and a song. It was all walking towards one small question, asked with a hopeful heart.</p>
+          <p class="lead">This little book had a gift, a candle, a wish, a song and a letter. It was all walking towards one small question, asked with a hopeful heart.</p>
           <div class="q-stage">
             <h2 style="margin-top:16px;">Can we date?</h2>
             <div class="q-buttons" id="q-buttons">
@@ -514,7 +553,7 @@
         <div class="celebration" id="celebration">
           <span class="big-heart" aria-hidden="true">♥</span>
           <h2 style="margin-top:14px;">You just made this story a happy one, Teena</h2>
-          <p class="lead">Thank you for opening the box, lighting the candle, making the wish and listening to the song, and most of all, for saying <strong>yes</strong>. Here is to long talks, small surprises, and many pages still to come.</p>
+          <p class="lead">Thank you for opening the box, lighting the candle, making the wish, listening to the song and reading the letter, and most of all, for saying <strong>yes</strong>. Here is to long talks, small surprises, and many pages still to come.</p>
           <p class="signoff">From the one who made this book for you</p>
         </div>
       </section>
@@ -688,7 +727,7 @@
           apsaraFig.scrollIntoView({ behavior: "smooth", block: "center" });
         });
 
-        /* ---------- page 4: song, Hota Hai Dil Ka Ye on YouTube ---------- */
+        /* ---------- page 4: song, Saudebaazi on YouTube ---------- */
         var playing = false, noteTimer = null, ytPlayer = null, ytReady = false, wantPlay = false;
         var playBtn = document.getElementById("play-btn");
         var songHint = document.getElementById("song-hint");
@@ -708,7 +747,7 @@
           playing = true;
           vinyl.classList.add("spinning");
           playBtn.textContent = "\u275A\u275A Pause";
-          songHint.textContent = "Playing now. Hota Hai Dil Ka Ye, just for you, Teena.";
+          songHint.textContent = "Playing now. Saudebaazi, just for you, Teena.";
           if (noteTimer) clearInterval(noteTimer);
           noteTimer = setInterval(floatNote, 900);
           floatNote();
@@ -723,8 +762,8 @@
         window.onYouTubeIframeAPIReady = function () {
           ytPlayer = new YT.Player("yt-player", {
             width: "200", height: "120",
-            videoId: "KqNaXqeDD9o",
-            playerVars: { autoplay: 0, controls: 0, rel: 0, playsinline: 1, loop: 1, playlist: "KqNaXqeDD9o" },
+            videoId: "VI6w857GeTw",
+            playerVars: { autoplay: 0, controls: 0, rel: 0, playsinline: 1, loop: 1, playlist: "VI6w857GeTw" },
             events: {
               onReady: function () {
                 ytReady = true;
@@ -763,8 +802,9 @@
           setPausedUI("Tap Play, Teena. This one is for you.");
           goTo(5);
         });
+        document.getElementById("to-page-6").addEventListener("click", function () { goTo(6); });
 
-        /* ---------- page 5: the question ---------- */
+        /* ---------- page 6: the question ---------- */
         var noBtn = document.getElementById("no-btn");
         var qButtons = document.getElementById("q-buttons");
         var qHint = document.getElementById("q-hint");
